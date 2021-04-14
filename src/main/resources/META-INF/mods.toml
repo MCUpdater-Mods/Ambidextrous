@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[36,)"
-license="Apache License 2.0"
+license="GNU Lesser General Public License v3.0"
 [[mods]]
 modId="ambidextrous"
 version="${version}"

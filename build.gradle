@@ -13,7 +13,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 group= "mod.ambidextrous"
-archivesBaseName = "ambidextrous"
+archivesBaseName = "${mod_name}-${mc_version}"
 
 processResources {
     exclude '**/*.xcf'
