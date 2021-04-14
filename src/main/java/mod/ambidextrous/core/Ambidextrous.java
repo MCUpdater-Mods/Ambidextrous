@@ -1,36 +1,18 @@
 package mod.ambidextrous.core;
 
-import mod.ambidextrous.network.NetworkRouter;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod(
-		name = Ambidextrous.MODNAME,
-		modid = Ambidextrous.MODID,
-		version = Ambidextrous.VERSION,
-		acceptedMinecraftVersions = "[1.9.4,1.13)",
-		dependencies = Ambidextrous.DEPENDENCIES )
+@Mod("ambidextrous")
 public class Ambidextrous
 {
-	public static final String MODNAME = "Ambidextrous";
 	public static final String MODID = "ambidextrous";
-	public static final String VERSION = "@VERSION@";
-	public static final String DEPENDENCIES = "after:Forge@[12.17.0.1909,)";
+	public static final Logger LOGGER = LogManager.getLogger();
 
-	@EventHandler
-	public void preinit(
-			final FMLPreInitializationEvent event )
-	{
-		if ( event.getSide() == Side.CLIENT )
-		{
-			ClientSide.init( event );
-		}
-
-		NetworkRouter.instance = new NetworkRouter();
-		MinecraftForge.EVENT_BUS.register( EventPlayerInteract.instance );
+	public Ambidextrous() {
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ModSetup::init);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
 	}
-
 }

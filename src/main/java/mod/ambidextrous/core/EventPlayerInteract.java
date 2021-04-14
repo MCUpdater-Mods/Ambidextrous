@@ -2,43 +2,43 @@ package mod.ambidextrous.core;
 
 import java.util.WeakHashMap;
 
-import mod.ambidextrous.network.NetworkRouter;
-import mod.ambidextrous.network.packets.PacketSuppressInteraction;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.ambidextrous.network.AmbidextrousChannel;
+import mod.ambidextrous.network.PacketSuppressInteraction;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.eventhandler.Event.Result;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
+@Mod.EventBusSubscriber
 public class EventPlayerInteract
 {
 
-	private class SupressionState
+	private static class SuppressionState
 	{
-		public SupressionState(
-				final EnumHand hand2,
+		public SuppressionState(
+				final Hand hand2,
 				final boolean newSetting )
 		{
 			hand = hand2;
 			suppress = newSetting;
 		}
 
-		public EnumHand hand = EnumHand.MAIN_HAND;
+		public Hand hand = Hand.MAIN_HAND;
 		public boolean suppress = false;
 	};
 
-	public static EventPlayerInteract instance = new EventPlayerInteract();
-
 	// just for the sake of simplicity.
-	private final WeakHashMap<EntityPlayer, SupressionState> server_state = new WeakHashMap<EntityPlayer, SupressionState>();
-	private final WeakHashMap<EntityPlayer, SupressionState> client_state = new WeakHashMap<EntityPlayer, SupressionState>();
+	private static final WeakHashMap<PlayerEntity, SuppressionState> server_state = new WeakHashMap<>();
+	private static final WeakHashMap<PlayerEntity, SuppressionState> client_state = new WeakHashMap<>();
 
 	// Are we on the server or the client?
-	private WeakHashMap<EntityPlayer, SupressionState> getState(
-			final EntityPlayer entityPlayer )
+	private static WeakHashMap<PlayerEntity, SuppressionState> getState(
+			final PlayerEntity entityPlayer )
 	{
-		if ( entityPlayer == null || entityPlayer.getEntityWorld() == null || entityPlayer.getEntityWorld().isRemote )
+		if (entityPlayer == null || entityPlayer.getCommandSenderWorld().isClientSide)
 		{
 			return client_state;
 		}
@@ -47,14 +47,14 @@ public class EventPlayerInteract
 	}
 
 	@SubscribeEvent
-	public void click(
+	public static void click(
 			final PlayerInteractEvent.RightClickItem e )
 	{
 		handleClick( e );
 	}
 
 	@SubscribeEvent
-	public void click(
+	public static void click(
 			final PlayerInteractEvent.RightClickBlock e )
 	{
 		handleClick( e );
@@ -62,19 +62,19 @@ public class EventPlayerInteract
 		if ( !e.isCanceled() )
 		{
 			final ItemStack s = e.getItemStack();
-			if ( s == null || s.getItem().doesSneakBypassUse( s, e.getWorld(), e.getPos(), e.getEntityPlayer() ) )
+			if ( s == null || s.getItem().doesSneakBypassUse( s, e.getWorld(), e.getPos(), e.getPlayer() ) )
 			{
-				e.setUseBlock( Result.ALLOW );
+				e.setUseBlock( Event.Result.ALLOW );
 			}
 		}
 	}
 
-	private void handleClick(
+	private static void handleClick(
 			final PlayerInteractEvent e )
 	{
-		final SupressionState current = getState( e.getEntityPlayer() ).get( e.getEntityPlayer() );
+		final SuppressionState current = getState( e.getPlayer() ).get( e.getPlayer() );
 
-		if ( current == null || current.suppress == false )
+		if ( current == null || !current.suppress)
 		{
 			// if nothing is set, or supression isn't on, then we don't care.
 			return;
@@ -87,21 +87,19 @@ public class EventPlayerInteract
 		}
 	}
 
-	public void setPlayerSuppressionState(
-			final EntityPlayer player,
-			final EnumHand hand,
+	public static void setPlayerSuppressionState(
+			final PlayerEntity player,
+			final Hand hand,
 			final boolean newState,
 			final boolean sendToServer )
 	{
 		if ( sendToServer )
 		{
-			final PacketSuppressInteraction packetSI = new PacketSuppressInteraction();
-			packetSI.hand = hand;
-			packetSI.newState = newState;
-			NetworkRouter.instance.sendToServer( packetSI );
+			final PacketSuppressInteraction packetSI = new PacketSuppressInteraction(hand, newState);
+			AmbidextrousChannel.INSTANCE.sendToServer( packetSI );
 		}
 
-		getState( player ).put( player, new SupressionState( hand, newState ) );
+		getState( player ).put( player, new SuppressionState( hand, newState ) );
 	}
 
 }

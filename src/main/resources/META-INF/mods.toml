@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="Apache License 2.0"
+[[mods]]
+modId="ambidextrous"
+version="${version}"
+displayName="Ambidextrous"
+authors="AlgorithmX2, smbarbour"
+description='''
+A mod about using two keybinds for each hand.
+'''
+[[dependencies.ambidextrous]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36.1.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.ambidextrous]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5,)"
+    ordering="NONE"
+    side="BOTH"
