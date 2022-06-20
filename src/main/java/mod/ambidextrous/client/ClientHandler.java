@@ -3,7 +3,7 @@ package mod.ambidextrous.client;
 import mod.ambidextrous.core.ClientSetup;
 import mod.ambidextrous.core.EventPlayerInteract;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,14 +32,14 @@ public class ClientHandler
 		// when mousing up switch to the other button if its down.
 		if ( msecondsForMainHand != 0 && msecondsForMainHand < msecondsForOffHand && ClientSetup.bindingMainHand.isDown() && !ClientSetup.bindingOffHand.isDown() )
 		{
-			EventPlayerInteract.setPlayerSuppressionState( mc.player, Hand.OFF_HAND, true, true );
+			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.OFF_HAND, true, true );
 			mc.options.keyUse = ClientSetup.bindingMainHand;
 			msecondsForOffHand = 0;
 		}
 
 		if ( msecondsForOffHand != 0 && msecondsForOffHand < msecondsForMainHand && ClientSetup.bindingOffHand.isDown() && !ClientSetup.bindingMainHand.isDown() )
 		{
-			EventPlayerInteract.setPlayerSuppressionState( mc.player, Hand.MAIN_HAND, true, true );
+			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.MAIN_HAND, true, true );
 			mc.options.keyUse = ClientSetup.bindingOffHand;
 			msecondsForMainHand = 0;
 		}
@@ -48,7 +48,7 @@ public class ClientHandler
 		if ( mc.options.keyUse != ClientSetup.bindingMainHand && ClientSetup.bindingMainHand.consumeClick() )
 		{
 			ClientSetup.bindingMainHand.clickCount++;
-			EventPlayerInteract.setPlayerSuppressionState( mc.player, Hand.OFF_HAND, true, true );
+			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.OFF_HAND, true, true );
 			mc.options.keyUse = ClientSetup.bindingMainHand;
 			msecondsForMainHand = System.currentTimeMillis();
 		}
@@ -56,7 +56,7 @@ public class ClientHandler
 		if ( mc.options.keyUse != ClientSetup.bindingOffHand && ClientSetup.bindingOffHand.consumeClick() )
 		{
 			ClientSetup.bindingOffHand.clickCount++;
-			EventPlayerInteract.setPlayerSuppressionState( mc.player, Hand.MAIN_HAND, true, true );
+			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.MAIN_HAND, true, true );
 			mc.options.keyUse = ClientSetup.bindingOffHand;
 			msecondsForOffHand = System.currentTimeMillis();
 		}
@@ -64,7 +64,7 @@ public class ClientHandler
 		// stop using one of the two key binds.
 		if ( !ClientSetup.bindingMainHand.isDown() && !ClientSetup.bindingOffHand.isDown() && mc.options.keyUse != ClientSetup.bindingOriginal )
 		{
-			EventPlayerInteract.setPlayerSuppressionState( mc.player, Hand.OFF_HAND, false, true );
+			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.OFF_HAND, false, true );
 			mc.options.keyUse = ClientSetup.bindingOriginal;
 			msecondsForMainHand = 0;
 			msecondsForOffHand = 0;
