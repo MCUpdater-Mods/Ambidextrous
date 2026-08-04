@@ -5,13 +5,13 @@ import mod.ambidextrous.core.Config;
 import mod.ambidextrous.core.EventPlayerInteract;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public class ClientHandler
 {
 	// track when a button was pressed to allow swapping to the previous button
@@ -21,7 +21,7 @@ public class ClientHandler
 
 	// check key-binds.
 	@SubscribeEvent
-	public static void tick(final TickEvent.ClientTickEvent e )
+	public static void tick(final ClientTickEvent.Post e)
 	{
 		final Minecraft mc = Minecraft.getInstance();
 
@@ -32,39 +32,39 @@ public class ClientHandler
 		}
 
 		// when mousing up switch to the other button if its down.
-		if ( msecondsForMainHand != 0 && msecondsForMainHand < msecondsForOffHand && ClientSetup.bindingMainHand.isDown() && !ClientSetup.bindingOffHand.isDown() )
+		if ( msecondsForMainHand != 0 && msecondsForMainHand < msecondsForOffHand && ClientSetup.MAIN_HAND.get().isDown() && !ClientSetup.OFF_HAND.get().isDown() )
 		{
 			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.OFF_HAND, true, true );
-			mc.options.keyUse = ClientSetup.bindingMainHand;
+			mc.options.keyUse = ClientSetup.MAIN_HAND.get();
 			msecondsForOffHand = 0;
 		}
 
-		if ( msecondsForOffHand != 0 && msecondsForOffHand < msecondsForMainHand && ClientSetup.bindingOffHand.isDown() && !ClientSetup.bindingMainHand.isDown() )
+		if ( msecondsForOffHand != 0 && msecondsForOffHand < msecondsForMainHand && ClientSetup.OFF_HAND.get().isDown() && !ClientSetup.MAIN_HAND.get().isDown() )
 		{
 			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.MAIN_HAND, true, true );
-			mc.options.keyUse = ClientSetup.bindingOffHand;
+			mc.options.keyUse = ClientSetup.OFF_HAND.get();
 			msecondsForMainHand = 0;
 		}
 
 		// handle switch binds to new active key.
-		if ( mc.options.keyUse != ClientSetup.bindingMainHand && ClientSetup.bindingMainHand.consumeClick() )
+		if ( mc.options.keyUse != ClientSetup.MAIN_HAND.get() && ClientSetup.MAIN_HAND.get().consumeClick() )
 		{
-			ClientSetup.bindingMainHand.clickCount++;
+			ClientSetup.MAIN_HAND.get().clickCount++;
 			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.OFF_HAND, true, true );
-			mc.options.keyUse = ClientSetup.bindingMainHand;
+			mc.options.keyUse = ClientSetup.MAIN_HAND.get();
 			msecondsForMainHand = System.currentTimeMillis();
 		}
 
-		if ( mc.options.keyUse != ClientSetup.bindingOffHand && ClientSetup.bindingOffHand.consumeClick() )
+		if ( mc.options.keyUse != ClientSetup.OFF_HAND.get() && ClientSetup.OFF_HAND.get().consumeClick() )
 		{
-			ClientSetup.bindingOffHand.clickCount++;
+			ClientSetup.OFF_HAND.get().clickCount++;
 			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.MAIN_HAND, true, true );
-			mc.options.keyUse = ClientSetup.bindingOffHand;
+			mc.options.keyUse = ClientSetup.OFF_HAND.get();
 			msecondsForOffHand = System.currentTimeMillis();
 		}
 
 		// stop using one of the two key binds.
-		if ( !ClientSetup.bindingMainHand.isDown() && !ClientSetup.bindingOffHand.isDown() && mc.options.keyUse != ClientSetup.bindingOriginal )
+		if ( !ClientSetup.MAIN_HAND.get().isDown() && !ClientSetup.OFF_HAND.get().isDown() && mc.options.keyUse != ClientSetup.bindingOriginal )
 		{
 			EventPlayerInteract.setPlayerSuppressionState( mc.player, InteractionHand.OFF_HAND, false, true );
 			mc.options.keyUse = ClientSetup.bindingOriginal;
@@ -78,7 +78,7 @@ public class ClientHandler
 		final Minecraft mc = Minecraft.getInstance();
 		if (!mc.player.isSpectator()) {
 			if (Config.reverseScroll.get()) {
-				mc.player.getInventory().swapPaint(event.getScrollDelta() * -1.0f);
+				mc.player.getInventory().swapPaint(event.getScrollDeltaY() * -1.0f);
 				event.setCanceled(true);
 			}
 		}

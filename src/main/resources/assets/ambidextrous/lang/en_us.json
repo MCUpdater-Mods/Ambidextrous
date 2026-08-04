@@ -1,4 +1,8 @@
 {
+  "key.ambidextrous.category": "Ambidextrous",
   "mod.ambidextrous.offhand": "Use Off Hand",
-  "mod.ambidextrous.mainhand": "Use Main Hand"
+  "mod.ambidextrous.mainhand": "Use Main Hand",
+  "ambidextrous.configuration.reverseHotbar": "Reverse Hotbar Scroll",
+  "ambidextrous.configuration.General": "General",
+  "ambidextrous.configuration.title": "Ambidextrous"
 }

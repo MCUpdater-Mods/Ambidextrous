@@ -1,18 +1,20 @@
 package mod.ambidextrous.core;
 
 import mod.ambidextrous.network.AmbidextrousChannel;
-import mod.ambidextrous.network.PacketSuppressInteraction;
+import mod.ambidextrous.network.SuppressInteraction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.WeakHashMap;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class EventPlayerInteract
 {
 
@@ -64,7 +66,7 @@ public class EventPlayerInteract
 			final ItemStack s = e.getItemStack();
 			if ( s == null || s.getItem().doesSneakBypassUse( s, e.getLevel(), e.getPos(), e.getEntity() ) )
 			{
-				e.setUseBlock( Event.Result.ALLOW );
+				e.setUseBlock(TriState.TRUE);
 			}
 		}
 	}
@@ -76,14 +78,15 @@ public class EventPlayerInteract
 
 		if ( current == null || !current.suppress)
 		{
-			// if nothing is set, or supression isn't on, then we don't care.
+			// if nothing is set, or suppression isn't on, then we don't care.
 			return;
 		}
 
 		if ( current.hand == e.getHand() )
 		{
 			// if we here suppression is on, was it the correct hand?
-			e.setCanceled( true );
+			if (e instanceof ICancellableEvent cancellableEvent)
+			cancellableEvent.setCanceled( true );
 		}
 	}
 
@@ -95,8 +98,7 @@ public class EventPlayerInteract
 	{
 		if ( sendToServer )
 		{
-			final PacketSuppressInteraction packetSI = new PacketSuppressInteraction(hand, newState);
-			AmbidextrousChannel.INSTANCE.sendToServer( packetSI );
+			PacketDistributor.sendToServer(new SuppressInteraction(hand, newState));
 		}
 
 		getState( player ).put( player, new SuppressionState( hand, newState ) );

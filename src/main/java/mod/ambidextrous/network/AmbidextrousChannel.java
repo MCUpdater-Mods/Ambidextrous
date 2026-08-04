@@ -1,22 +1,21 @@
 package mod.ambidextrous.network;
 
-import mod.ambidextrous.core.Ambidextrous;
+import mod.ambidextrous.Ambidextrous;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class AmbidextrousChannel {
-    private static final String PROTOCOL_VERSION = "1";
-    public static SimpleChannel INSTANCE;
 
-    public static void init() {
-        INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(Ambidextrous.MODID,"suppress"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
-
-        INSTANCE.registerMessage(0,
-                PacketSuppressInteraction.class,
-                PacketSuppressInteraction::toBytes,
-                PacketSuppressInteraction::fromBytes,
-                PacketSuppressInteraction::handle
+    @SubscribeEvent
+    public static void register(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar("1");
+        registrar.playToServer(
+                SuppressInteraction.TYPE,
+                SuppressInteraction.STREAM_CODEC,
+                ServerHandler::handleSuppress
         );
     }
 }
