@@ -62,7 +62,7 @@ public class EventPlayerInteract
 		if ( !e.isCanceled() )
 		{
 			final ItemStack s = e.getItemStack();
-			if ( s == null || s.getItem().doesSneakBypassUse( s, e.getWorld(), e.getPos(), e.getPlayer() ) )
+			if ( s == null || s.getItem().doesSneakBypassUse( s, e.getLevel(), e.getPos(), e.getEntity() ) )
 			{
 				e.setUseBlock( Event.Result.ALLOW );
 			}
@@ -72,7 +72,7 @@ public class EventPlayerInteract
 	private static void handleClick(
 			final PlayerInteractEvent e )
 	{
-		final SuppressionState current = getState( e.getPlayer() ).get( e.getPlayer() );
+		final SuppressionState current = getState( e.getEntity() ).get( e.getEntity() );
 
 		if ( current == null || !current.suppress)
 		{

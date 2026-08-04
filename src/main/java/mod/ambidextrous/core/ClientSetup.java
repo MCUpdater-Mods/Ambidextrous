@@ -2,7 +2,7 @@ package mod.ambidextrous.core;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -15,11 +15,10 @@ public class ClientSetup {
     public static KeyMapping bindingMainHand;
     public static KeyMapping bindingOffHand;
 
-    public static void init(final FMLClientSetupEvent event) {
+    public static void registerKeys(RegisterKeyMappingsEvent event) {
         final String category = "key.categories.gameplay";
 
-        ClientRegistry.registerKeyBinding( bindingOffHand = new KeyMapping( "mod.ambidextrous.offhand", KeyConflictContext.IN_GAME, InputConstants.UNKNOWN, category ) );
-        ClientRegistry.registerKeyBinding( bindingMainHand = new KeyMapping( "mod.ambidextrous.mainhand", KeyConflictContext.IN_GAME, InputConstants.UNKNOWN, category ) );
-
+        event.register( bindingOffHand = new KeyMapping( "mod.ambidextrous.offhand", KeyConflictContext.IN_GAME, InputConstants.UNKNOWN, category ) );
+        event.register( bindingMainHand = new KeyMapping( "mod.ambidextrous.mainhand", KeyConflictContext.IN_GAME, InputConstants.UNKNOWN, category ) );
     }
 }

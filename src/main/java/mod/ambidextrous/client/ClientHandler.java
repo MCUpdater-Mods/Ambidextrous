@@ -1,10 +1,12 @@
 package mod.ambidextrous.client;
 
 import mod.ambidextrous.core.ClientSetup;
+import mod.ambidextrous.core.Config;
 import mod.ambidextrous.core.EventPlayerInteract;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -71,4 +73,14 @@ public class ClientHandler
 		}
 	}
 
+	@SubscribeEvent
+	public static void onScroll(InputEvent.MouseScrollingEvent event) {
+		final Minecraft mc = Minecraft.getInstance();
+		if (!mc.player.isSpectator()) {
+			if (Config.reverseScroll.get()) {
+				mc.player.getInventory().swapPaint(event.getScrollDelta() * -1.0f);
+				event.setCanceled(true);
+			}
+		}
+	}
 }

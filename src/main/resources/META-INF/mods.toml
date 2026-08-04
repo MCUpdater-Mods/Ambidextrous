@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[43,)"
 license="GNU Lesser General Public License v3.0"
 [[mods]]
 modId="ambidextrous"
@@ -12,13 +12,13 @@ A mod about using two keybinds for each hand.
 [[dependencies.ambidextrous]]
     modId="forge"
     mandatory=true
-    versionRange="[36.1.0,)"
+    versionRange="[43,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.ambidextrous]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5,)"
+    versionRange="[1.19.2,)"
     ordering="NONE"
     side="BOTH"
