@@ -1,6 +1,5 @@
 package mod.ambidextrous.core;
 
-
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class Config {

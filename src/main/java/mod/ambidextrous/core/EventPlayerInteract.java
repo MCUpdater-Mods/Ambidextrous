@@ -1,6 +1,5 @@
 package mod.ambidextrous.core;
 
-import mod.ambidextrous.network.AmbidextrousChannel;
 import mod.ambidextrous.network.SuppressInteraction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
